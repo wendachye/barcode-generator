@@ -82,7 +82,7 @@ export default function Home() {
         </tbody>
       </table>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6 justify-end">
         <button
           onClick={handleGenerateAllBarcodes}
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
