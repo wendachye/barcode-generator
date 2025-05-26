@@ -15,34 +15,65 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
 
   const handlePrint = () => {
     const printContents = printRef.current?.innerHTML;
-    const printWindow = window.open('', '', 'height=800,width=1000');
+    if (!printContents) return;
 
-    if (printWindow && printContents) {
-      console.log('here!!!');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Barcodes</title>
-            <style>
-              @media print {
-                body {
-                  margin: 0;
-                }
-              }
-              body {
-                font-family: Arial, sans-serif;
-                padding: 0;
-              }
-            </style>
-          </head>
-          <body>${printContents}</body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.visibility = 'hidden';
+
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Barcode Label</title>
+        <style>
+          @media print {
+            .label-page {
+              width: 140mm;
+              height: 95mm;
+              page-break-after: always;
+              margin: 0;
+              padding: 0;
+            }
+
+            body {
+              margin: 0;
+              font-size: 12px;
+              color: black;
+            }
+
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+            }
+          }
+        </style>
+      </head>
+      <body>${printContents}</body>
+    </html>
+  `);
+    doc.close();
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+        // Remove iframe after printing
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 200);
+    };
   };
 
   return (
