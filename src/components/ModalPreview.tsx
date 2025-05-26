@@ -24,13 +24,7 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
     iframe.style.border = '0';
     iframe.style.visibility = 'hidden';
 
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
-
-    doc.open();
-    doc.write(`
+    const html = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -45,30 +39,31 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
               padding: 0;
             }
 
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
+            }
+
             body {
               margin: 0;
               font-size: 12px;
               color: black;
-            }
-
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
             }
           }
         </style>
       </head>
       <body>${printContents}</body>
     </html>
-  `);
-    doc.close();
+  `;
+
+    iframe.srcdoc = html;
+    document.body.appendChild(iframe);
 
     iframe.onload = () => {
       setTimeout(() => {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
 
-        // Remove iframe after printing
         setTimeout(() => {
           document.body.removeChild(iframe);
         }, 1000);
@@ -78,7 +73,7 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="min-w-4xl flex flex-col max-h-[90vh]">
+      <DialogContent className="min-w-3xl flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">Barcode Preview</DialogTitle>
         </DialogHeader>
