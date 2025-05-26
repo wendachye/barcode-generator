@@ -34,7 +34,7 @@ export default function BarcodeLabel({ item }: { item: Item }) {
           <tr>
             <td className="border border-black font-semibold p-2">Customer Part No.</td>
             <td colSpan={3} className="border border-black p-2">
-              <div>{item.customerPartNo}</div>
+              {/* <div>{item.customerPartNo}</div> */}
               <div className="max-w-full overflow-hidden">
                 <BarcodeBlock value={item.customerPartNo} />
               </div>
@@ -43,7 +43,7 @@ export default function BarcodeLabel({ item }: { item: Item }) {
           <tr>
             <td className="border border-black font-semibold p-2">OSP Part No.</td>
             <td colSpan={3} className="border border-black p-2">
-              <div>{item.ospPart}</div>
+              {/* <div>{item.ospPart}</div> */}
               <div className="max-w-full overflow-hidden">
                 <BarcodeBlock value={item.ospPart} />
               </div>
@@ -52,14 +52,14 @@ export default function BarcodeLabel({ item }: { item: Item }) {
           <tr>
             <td className="border border-black font-semibold p-2">Quantity</td>
             <td className="border border-black p-2">
-              <div>{isNaN(Number(item.qty)) ? item.qty : Number(item.qty).toLocaleString()}</div>
+              {/* <div>{isNaN(Number(item.qty)) ? item.qty : Number(item.qty).toLocaleString()}</div> */}
               <div className="max-w-full overflow-hidden">
                 <BarcodeBlock value={item.qty} />
               </div>
             </td>
             <td className="border border-black font-semibold p-2">Date Code</td>
             <td className="border border-black p-2">
-              <div>{item.dateCode}</div>
+              {/* <div>{item.dateCode}</div> */}
               <div className="max-w-full overflow-hidden">
                 <BarcodeBlock value={item.dateCode} />
               </div>

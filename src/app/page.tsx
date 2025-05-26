@@ -1,25 +1,129 @@
 'use client';
 
-import BarcodeLabel from '@/components/BarcodeLabel';
-import { useState } from 'react';
-
-interface Item {
-  item: string;
-  name: string;
-  qty: string;
-  showBarcode: boolean;
-}
+import TableEditor from '@/components/TableEditor';
+import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
+import UploadFile from '@/components/UploadFile';
+import { CirclePlus, ScanBarcode, Trash2 } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { read, utils } from 'xlsx';
 
 export default function Home() {
-  const [items, setItems] = useState<Item[]>([{ item: '', name: '', qty: '', showBarcode: false }]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<Barcode.Item[]>([]);
 
-  const handleChange = (index: number, field: keyof Item, value: string) => {
+  const isValidData = useMemo(() => {
+    if (items.length === 0) return false;
+    return items.every(
+      (item) =>
+        item.customerPartNo &&
+        item.ospPartNo &&
+        item.qty &&
+        item.dateCode &&
+        item.customerPO &&
+        item.ospInvoiceNo &&
+        item.cartonNo &&
+        item.brand
+    );
+  }, [items]);
+
+  const handleGenerateAllBarcodes = () => {
+    const updatedItems = items.map((item) => ({ ...item, showBarcode: true }));
+    setItems(updatedItems);
+  };
+
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset the file input to allow re-uploading the same file
+    e.target.value = '';
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (!event.target?.result) return;
+
+      const workbook = read(event.target.result);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = utils.sheet_to_json<Record<string, string>>(worksheet);
+
+      if (jsonData.length === 0) {
+        toast.error('No data found in the uploaded file', { position: 'top-center' });
+        return;
+      }
+
+      const parsedItems = jsonData.map((item) => {
+        return {
+          customerPartNo: item['Customer Part No.'] || '',
+          ospPartNo: item['OSP Part No.'] || '',
+          qty: item['Qty'] || '',
+          dateCode: item['Date Code'] || '',
+          customerPO: item['Customer PO'] || '',
+          ospInvoiceNo: item['OSP Invoice No.'] || '',
+          cartonNo: item['Carton No.'] || '',
+          brand: item['Brand'] || '',
+        };
+      });
+
+      const hasEmptyFields = parsedItems.some(
+        (item) =>
+          !item.customerPartNo ||
+          !item.ospPartNo ||
+          !item.qty ||
+          !item.dateCode ||
+          !item.customerPO ||
+          !item.ospInvoiceNo ||
+          !item.cartonNo ||
+          !item.brand
+      );
+
+      if (hasEmptyFields) {
+        toast.error('Please ensure all fields are filled in the uploaded file.', {
+          position: 'top-center',
+        });
+        return;
+      }
+
+      setItems(parsedItems);
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
+  const handleClearAll = () => {
+    setItems([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAddNewRow = () => {
+    if (
+      items.some((item) => Object.values(item).some((value) => String(value ?? '').trim() === ''))
+    ) {
+      toast.error('Please fill in all fields before adding a new row.', { position: 'top-center' });
+      return;
+    }
+
+    setItems([
+      {
+        customerPartNo: '',
+        ospPartNo: '',
+        qty: '',
+        dateCode: '',
+        customerPO: '',
+        ospInvoiceNo: '',
+        cartonNo: '',
+        brand: '',
+      },
+      ...items,
+    ]);
+  };
+
+  const handleRowChange = (index: number, field: keyof Barcode.Item, value: string) => {
     const updatedItems = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
     setItems(updatedItems);
-
-    if (index === items.length - 1 && field === 'item' && value.trim() !== '') {
-      setItems([...updatedItems, { item: '', name: '', qty: '', showBarcode: false }]);
-    }
   };
 
   const handleRemoveRow = (index: number) => {
@@ -27,91 +131,34 @@ export default function Home() {
     setItems(updatedItems);
   };
 
-  const handleGenerateAllBarcodes = () => {
-    const updatedItems = items.map((item) => ({ ...item, showBarcode: true }));
-    setItems(updatedItems);
-  };
-
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">ID Tag Generator</h1>
+    <div className="p-4 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8">Barcode Generator</h1>
 
-      <table className="w-full border mb-4">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Item Code</th>
-            <th className="border p-2">Item Name</th>
-            <th className="border p-2">Quantity</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item, idx) => (
-            <tr key={idx} className="text-center">
-              <td className="border p-2">
-                <input
-                  className="border p-1 w-full rounded"
-                  value={item.item}
-                  onChange={(e) => handleChange(idx, 'item', e.target.value)}
-                />
-              </td>
-              <td className="border p-2">
-                <input
-                  className="border p-1 w-full rounded"
-                  value={item.name}
-                  onChange={(e) => handleChange(idx, 'name', e.target.value)}
-                />
-              </td>
-              <td className="border p-2">
-                <input
-                  className="border p-1 w-full rounded"
-                  value={item.qty}
-                  onChange={(e) => handleChange(idx, 'qty', e.target.value)}
-                />
-              </td>
-              <td className="border p-2">
-                <button
-                  onClick={() => handleRemoveRow(idx)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                >
-                  Remove
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-between">
+        <div className="flex gap-4">
+          <UploadFile ref={fileInputRef} accept=".xlsx,.xls" onChange={handleUpload} />
 
-      <div className="flex gap-4 mb-6 justify-end">
-        <button
-          onClick={handleGenerateAllBarcodes}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Generate All Barcodes
-        </button>
+          <Button variant="secondary" onClick={handleClearAll}>
+            <Trash2 />
+            Clear All
+          </Button>
+
+          <Button variant="outline" onClick={handleAddNewRow}>
+            <CirclePlus />
+            Add New
+          </Button>
+        </div>
+
+        <Button onClick={handleGenerateAllBarcodes} disabled={!isValidData}>
+          <ScanBarcode />
+          Generate Barcode
+        </Button>
       </div>
 
-      <div className="space-y-4">
-        {items.map(
-          (item, idx) =>
-            item.showBarcode &&
-            item.item.trim() !== '' && (
-              <BarcodeLabel
-                key={idx}
-                item={{
-                  customerPartNo: item.item,
-                  ospPart: item.item,
-                  qty: item.qty,
-                  poNo: '4513185188',
-                  invoiceNo: '1234567890',
-                  cartonNo: '5',
-                  brand: 'CUSTOMER ELECTRONICS',
-                  dateCode: '2505',
-                }}
-              />
-            )
-        )}
-      </div>
+      <TableEditor items={items} onChangeRow={handleRowChange} onRemoveRow={handleRemoveRow} />
+
+      <Toaster />
     </div>
   );
 }
