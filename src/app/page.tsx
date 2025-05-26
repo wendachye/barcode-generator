@@ -1,5 +1,6 @@
 'use client';
 
+import ModalPreview from '@/components/ModalPreview';
 import TableEditor from '@/components/TableEditor';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
@@ -12,6 +13,7 @@ import { read, utils } from 'xlsx';
 export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<Barcode.Item[]>([]);
+  const [modalPreviewOpen, setModalPreviewOpen] = useState(false);
 
   const isValidData = useMemo(() => {
     if (items.length === 0) return false;
@@ -27,11 +29,6 @@ export default function Home() {
         item.brand
     );
   }, [items]);
-
-  const handleGenerateAllBarcodes = () => {
-    const updatedItems = items.map((item) => ({ ...item, showBarcode: true }));
-    setItems(updatedItems);
-  };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -121,6 +118,10 @@ export default function Home() {
     ]);
   };
 
+  const handleGenerateBarcode = () => {
+    setModalPreviewOpen(true);
+  };
+
   const handleRowChange = (index: number, field: keyof Barcode.Item, value: string) => {
     const updatedItems = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
     setItems(updatedItems);
@@ -150,13 +151,19 @@ export default function Home() {
           </Button>
         </div>
 
-        <Button onClick={handleGenerateAllBarcodes} disabled={!isValidData}>
+        <Button onClick={handleGenerateBarcode} disabled={!isValidData}>
           <ScanBarcode />
           Generate Barcode
         </Button>
       </div>
 
       <TableEditor items={items} onChangeRow={handleRowChange} onRemoveRow={handleRemoveRow} />
+
+      <ModalPreview
+        open={modalPreviewOpen}
+        onClose={() => setModalPreviewOpen(false)}
+        items={items}
+      />
 
       <Toaster />
     </div>

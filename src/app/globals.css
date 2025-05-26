@@ -124,3 +124,31 @@
 button {
   cursor: pointer;
 }
+
+@media print {
+  table,
+  th,
+  td {
+    border: 1px solid black !important;
+    border-collapse: collapse !important;
+  }
+
+  th,
+  td {
+    padding: 4mm;
+  }
+  
+  .label-page {
+    width: 140mm;
+    height: 95mm;
+    page-break-after: always;
+    page-break-inside: avoid;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
