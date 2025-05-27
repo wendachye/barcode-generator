@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Barcode Generator',
+  title: 'Barcode Label Generator',
   description: '',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
