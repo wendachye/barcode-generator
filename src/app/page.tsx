@@ -137,7 +137,7 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-8">Barcode Generator</h1>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-between">
-        <div className="flex gap-4">
+        <div className="flex gap-2 sm:gap-4">
           <UploadFile ref={fileInputRef} accept=".xlsx,.xls" onChange={handleUpload} />
 
           <Button variant="secondary" onClick={handleClearAll}>

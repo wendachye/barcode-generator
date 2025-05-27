@@ -73,9 +73,11 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="min-w-3xl flex flex-col max-h-[90vh]">
+      <DialogContent className="flex flex-col max-w-[90vw] sm:max-w-3xl w-full h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">Barcode Preview</DialogTitle>
+          <DialogTitle className="text-center text-xl sm:text-2xl font-bold">
+            Barcode Preview
+          </DialogTitle>
         </DialogHeader>
 
         <DialogClose className="absolute right-6 top-6 text-gray-600">
