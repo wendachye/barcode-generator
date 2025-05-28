@@ -37,7 +37,7 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
 
             body {
               margin: 0;
-              font-size: 12px;
+              font-size: 14px;
               color: black;
             }
 
@@ -46,7 +46,7 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
               height: 90mm;
               page-break-after: always;
               box-sizing: border-box;
-              margin-top: 8mm;
+              margin-top: 6mm;
               margin-left: 10mm;
             }
 
