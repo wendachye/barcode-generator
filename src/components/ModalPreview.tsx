@@ -32,7 +32,7 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
         <style>
           @media print {
             @page {
-              margin: 10px;
+              margin: 0;
             }
 
             body {
@@ -45,14 +45,22 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
               width: 145mm;
               height: 90mm;
               page-break-after: always;
-              margin: 0;
-              padding: 0;
               box-sizing: border-box;
+              margin-top: 8mm;
+              margin-left: 10mm;
             }
 
             table, th, td {
               border: 1px solid black;
               border-collapse: collapse;
+            }
+
+            .label-title {
+              font-weight: bold;
+            }
+
+            th, td {
+              padding-left: 6px;
             }
           }
         </style>

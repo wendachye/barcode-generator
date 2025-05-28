@@ -15,8 +15,8 @@ export default function BarcodeBlock({ value }: Props) {
       JsBarcode(ref.current, `${value}`, {
         format: 'CODE39',
         displayValue: true,
-        fontSize: 12,
-        height: 50,
+        fontSize: 10,
+        height: 48,
         width: 1.2,
       });
     }
