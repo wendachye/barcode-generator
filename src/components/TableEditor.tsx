@@ -18,10 +18,10 @@ const TableEditor = ({ items, onChangeRow, onRemoveRow }: TableEditorProps) => {
             <TableHead>Customer Part No.</TableHead>
             <TableHead>OSP Part No.</TableHead>
             <TableHead>Qty</TableHead>
-            <TableHead>Date Code</TableHead>
             <TableHead>Customer PO</TableHead>
             <TableHead>OSP Invoice No.</TableHead>
             <TableHead>Carton No.</TableHead>
+            <TableHead>Date Code</TableHead>
             <TableHead>Brand</TableHead>
             <TableHead></TableHead>
           </TableRow>
@@ -44,12 +44,6 @@ const TableEditor = ({ items, onChangeRow, onRemoveRow }: TableEditorProps) => {
               <TableCell className="min-w-[90px]">
                 <Input value={item.qty} onChange={(e) => onChangeRow(idx, 'qty', e.target.value)} />
               </TableCell>
-              <TableCell className="min-w-[90px]">
-                <Input
-                  value={item.dateCode}
-                  onChange={(e) => onChangeRow(idx, 'dateCode', e.target.value)}
-                />
-              </TableCell>
               <TableCell className="min-w-[150px]">
                 <Input
                   value={item.customerPO}
@@ -66,6 +60,12 @@ const TableEditor = ({ items, onChangeRow, onRemoveRow }: TableEditorProps) => {
                 <Input
                   value={item.cartonNo}
                   onChange={(e) => onChangeRow(idx, 'cartonNo', e.target.value)}
+                />
+              </TableCell>
+              <TableCell className="min-w-[90px]">
+                <Input
+                  value={item.dateCode}
+                  onChange={(e) => onChangeRow(idx, 'dateCode', e.target.value)}
                 />
               </TableCell>
               <TableCell className="min-w-[150px]">
