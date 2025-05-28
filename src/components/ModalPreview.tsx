@@ -31,23 +31,28 @@ const ModalPreview = ({ open, onClose, items }: ModalPreviewProps) => {
         <title>Barcode Label</title>
         <style>
           @media print {
-            .label-page {
-              width: 140mm;
-              height: 95mm;
-              page-break-after: always;
-              margin: 0;
-              padding: 0;
-            }
-
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
+            @page {
+              margin: 10px;
             }
 
             body {
               margin: 0;
               font-size: 12px;
               color: black;
+            }
+
+            .label-page {
+              width: 145mm;
+              height: 90mm;
+              page-break-after: always;
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+
+            table, th, td {
+              border: 1px solid black;
+              border-collapse: collapse;
             }
           }
         </style>

@@ -4,7 +4,7 @@ import BarcodeBlock from './BarcodeBlock';
 
 export default function BarcodeLabel({ item }: { item: Barcode.Item }) {
   return (
-    <div className="label-page min-w-[580px]  sm:max-w-[580px] w-full border border-black text-xs text-black mx-auto mb-6 overflow-x-auto">
+    <div className="label-page w-auto h-auto box-border border border-black text-xs text-black mb-3">
       <table className="table-fixed border-collapse w-full">
         <colgroup>
           <col style={{ width: '128px' }} />
