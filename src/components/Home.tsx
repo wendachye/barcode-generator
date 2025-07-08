@@ -39,50 +39,79 @@ export default function Home() {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      if (!event.target?.result) return;
+      try {
+        if (!event.target?.result) return;
 
-      const workbook = read(event.target.result);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = utils.sheet_to_json<Record<string, string>>(worksheet);
+        const workbook = read(event.target.result);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = utils.sheet_to_json<Record<string, string>>(worksheet);
 
-      if (jsonData.length === 0) {
-        toast.error('No data found in the uploaded file', { position: 'top-center' });
-        return;
-      }
+        if (jsonData.length === 0) {
+          toast.error('No data found in the uploaded file', { position: 'top-center' });
+          return;
+        }
 
-      const parsedItems = jsonData.map((item) => {
-        return {
-          customerPartNo: item['Customer Part No.'] || '',
-          ospPartNo: item['OSP Part No.'] || '',
-          qty: item['Qty'] || '',
-          dateCode: item['Date Code'] || '',
-          customerPO: item['Customer PO'] || '',
-          ospInvoiceNo: item['OSP Invoice No.'] || '',
-          cartonNo: item['Carton No.'] || '',
-          brand: item['Brand'] || '',
-        };
-      });
+        // validate required fields
+        const requiredFields = [
+          'Customer Part No.',
+          'OSP Part No.',
+          'Qty',
+          'Date Code',
+          'Customer PO',
+          'OSP Invoice No.',
+          'Carton No.',
+          'Brand',
+        ];
 
-      const hasEmptyFields = parsedItems.some(
-        (item) =>
-          !item.customerPartNo ||
-          !item.ospPartNo ||
-          !item.qty ||
-          !item.dateCode ||
-          !item.customerPO ||
-          !item.ospInvoiceNo ||
-          !item.cartonNo ||
-          !item.brand
-      );
+        const missingFields = requiredFields.filter((field) => !jsonData[0].hasOwnProperty(field));
 
-      if (hasEmptyFields) {
-        toast.error('Please ensure all fields are filled in the uploaded file.', {
+        if (missingFields.length > 0) {
+          toast.error(
+            `The uploaded file is missing the following required fields: ${missingFields.join(', ')}`,
+            { position: 'top-center' }
+          );
+          return;
+        }
+
+        const parsedItems = jsonData.map((item) => {
+          return {
+            customerPartNo: item['Customer Part No.'] || '',
+            ospPartNo: item['OSP Part No.'] || '',
+            qty: item['Qty'] || '',
+            dateCode: item['Date Code'] || '',
+            customerPO: item['Customer PO'] || '',
+            ospInvoiceNo: item['OSP Invoice No.'] || '',
+            cartonNo: item['Carton No.'] || '',
+            brand: item['Brand'] || '',
+          };
+        });
+
+        const hasEmptyFields = parsedItems.some(
+          (item) =>
+            !item.customerPartNo ||
+            !item.ospPartNo ||
+            !item.qty ||
+            !item.dateCode ||
+            !item.customerPO ||
+            !item.ospInvoiceNo ||
+            !item.cartonNo ||
+            !item.brand
+        );
+
+        if (hasEmptyFields) {
+          toast.error('Please ensure all fields are filled in the uploaded file.', {
+            position: 'top-center',
+          });
+          return;
+        }
+
+        setItems(parsedItems);
+      } catch (error) {
+        console.log('error', error);
+        toast.error('Something went wrong while processing the file.', {
           position: 'top-center',
         });
-        return;
       }
-
-      setItems(parsedItems);
     };
 
     reader.readAsArrayBuffer(file);
