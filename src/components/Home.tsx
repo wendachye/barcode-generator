@@ -105,6 +105,35 @@ export default function Home() {
           return;
         }
 
+        // validate data value for code39 barcode - 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%
+        const isValidCode39 = (value: string) => {
+          const code39Regex = /^[0-9A-Z-. $/+%]*$/;
+          return code39Regex.test(value);
+        };
+
+        if (
+          parsedItems.some((item) => {
+            return (
+              !isValidCode39(item.customerPartNo) ||
+              !isValidCode39(item.ospPartNo) ||
+              !isValidCode39(item.qty) ||
+              !isValidCode39(item.dateCode) ||
+              !isValidCode39(item.customerPO) ||
+              !isValidCode39(item.ospInvoiceNo) ||
+              !isValidCode39(item.cartonNo) ||
+              !isValidCode39(item.brand)
+            );
+          })
+        ) {
+          toast.error(
+            'Invalid characters found in the data. Only 0-9, A-Z, - . $ / + % are allowed.',
+            {
+              position: 'top-center',
+            }
+          );
+          return;
+        }
+
         setItems(parsedItems);
       } catch (error) {
         console.log('error', error);
